@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: Swagger API - OpenAPI 3.0
+  description: |-
+    This is a sample API Server based on the OpenAPI 3.0 specification.  
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  version: 1.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost/api/v1
+tags:
+  - name: config
+    description: Operations about configuration
+paths:
+  /configuration:
+    get:
+      tags:
+        - config
+      summary: get configuration information
+      description: ''
+      operationId: getConfig
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+        '400':
+          description: Invalid username/password supplied
+
+components:
+  schemas:
+    Configuration:
+      type: object
+      properties:
+        lines:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: string
+                description: 食品名
+              process:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    index:
+                      type: integer
+                      description: プロセスのインデックス
+                    work:
+                      type: integer
+                      description: 作業番号
+                    imagePath:
+                      type: string
+                      description: 画像ファイルのパス
+      example:
+        lines:
+          - line: "食品A"
+            process:
+              - index: 1
+                work: 1
+                imagePath: "image1.png"
+              - index: 2
+                work: 2
+                imagePath: "image2.png"
+              - index: 3
+                work: 3
+                imagePath: "image3.png"
+
