@@ -99,6 +99,8 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height, rep
 
     // 各プロセスを横に並べる間隔
     const processSpacing = 50;
+    // 一旦クリア
+    svg.selectAll("image").remove();
     // 各プロセスに対して画像を読み込んで幅と高さを取得し、表示
     svg.selectAll("image")
       .data(configLine)
