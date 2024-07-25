@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { PanelProps } from '@grafana/data';
 import { SimpleOptions } from 'types';
 import { css, cx } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
+import { PanelDataErrorView } from '@grafana/runtime';
 import * as d3 from 'd3';
 import image1 from '../img/image1.png';
 import image2 from '../img/image2.png';
@@ -37,12 +38,16 @@ interface ProcessData {
   imagePath: string;
 };
 
-export const SimplePanel: React.FC<Props> = ({ options, data, width, height, replaceVariables }) => {
+export const SimplePanel: React.FC<Props> = ({ options, data, width, height, fieldConfig, id, replaceVariables }) => {
   // const theme = useTheme2();
   const styles = useStyles2(getStyles);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const [configLine, setConfigLine] = useState<ProcessData[]>([]);
+
+  if (data.series.length === 0) {
+    return <PanelDataErrorView fieldConfig={fieldConfig} panelId={id} data={data} needsStringField />;
+  }
 
   // 'configuration' Query の結果を使用
   let processes: ProcessData[] = [];
@@ -51,6 +56,7 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height, rep
   });
   if( data1 != null ) {
     if( 0 < data1.length ) {
+      console.log( "configuration", data1.fields[0].values[0] );
       const cfgStructure = JSON.parse( data1.fields[0].values[0] );
       processes = cfgStructure?.process;
     }
@@ -134,12 +140,27 @@ export const SimplePanel: React.FC<Props> = ({ options, data, width, height, rep
         `
       )}
     >
+      {/* <svg
+        className={styles.svg}
+        width={width}
+        height={height}
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        viewBox={`-${width / 2} -${height / 2} ${width} ${height}`}
+      >
+        <g>
+          <circle data-testid="simple-panel-circle" style={{ fill: theme.colors.primary.main }} r={100} />
+        </g>
+      </svg> */}
+
       <div>
         <svg className={styles.svg} width={width} height={height} ref={svgRef}></svg>
       </div>
 
       <div className={styles.textBox}>
-        {options.showSeriesCount && <div>Number of series: {data.series.length}</div>}
+        {options.showSeriesCount && (
+          <div data-testid="simple-panel-series-counter">Number of series: {data.series.length}</div>
+        )}
         <div>Text option value: {options.text}</div>
       </div>
     </div>
